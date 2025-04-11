@@ -1,52 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>View 3D Model</title>
+    <title>Modelo 3D: Inercia</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
       body {
         font-family: sans-serif;
         text-align: center;
         padding: 20px;
+        background: #f4f4f4;
       }
       model-viewer {
         width: 100%;
         max-width: 600px;
         height: 400px;
         margin: 20px auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       }
-      a.button {
+      a.boton {
         display: inline-block;
         margin-top: 20px;
-        padding: 10px 20px;
-        background: #4285f4;
+        padding: 12px 24px;
+        background: #4caf50;
         color: white;
         text-decoration: none;
-        border-radius: 5px;
+        font-weight: bold;
+        border-radius: 8px;
       }
     </style>
   </head>
   <body>
-    <h1>Preview the 3D Model</h1>
+    <h1>Modelo 3D: Depósito de inercia</h1>
 
-    <!-- Embedded browser viewer -->
     <model-viewer
-      src="https://mel142.github.io/Interacumulador.glb"
-      alt="3D model"
+      src="https://mel142.github.io/inercia.glb"
+      ios-src="https://mel142.github.io/inercia.usdz"
+      alt="Depósito de inercia"
       auto-rotate
       camera-controls
       ar
       ar-modes="scene-viewer webxr quick-look"
-      ios-src="model.usdz"
     ></model-viewer>
 
-    <!-- AR launch button (only works on Android Chrome) -->
     <a
-      class="button"
-      href="intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/Interacumulador.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io;end;"
+      class="boton"
+      href="intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/inercia.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io;end;"
     >
-      View in AR
+      Ver en realidad aumentada
     </a>
   </body>
 </html>
