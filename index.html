@@ -1,13 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>View in AR</title>
+    <meta charset="UTF-8" />
+    <title>View 3D Model</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      model-viewer {
+        width: 100%;
+        max-width: 600px;
+        height: 400px;
+        margin: 20px auto;
+      }
+      a.button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #4285f4;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Launch AR</h1>
-<a href="intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/Mel142.github.io/Interacumulador.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io/Mel142.github.io;end;">
-  View in AR
-</a>
-</body>
-</html>
+    <h1>Preview the 3D Model</h1>
 
+    <!-- Embedded browser viewer -->
+    <model-viewer
+      src="https://mel142.github.io/Mel142.github.io/Interacumulador.glb"
+      alt="3D model"
+      auto-rotate
+      camera-controls
+      ar
+      ar-modes="scene-viewer webxr quick-look"
+      ios-src="model.usdz"
+    ></model-viewer>
+
+    <!-- AR launch button (only works on Android Chrome) -->
+    <a
+      class="button"
+      href="intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/Mel142.github.io/Interacumulador.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io/Mel142.github.io;end;"
+    >
+      View in AR
+    </a>
+  </body>
+</html>
