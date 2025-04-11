@@ -2,85 +2,84 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Inercia en AR (sin marcador)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inercia en AR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/webxr/ARButton.js"></script>
     <style>
-      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: sans-serif;
+      }
       #info {
         position: absolute;
         top: 10px;
         left: 10px;
-        background: rgba(0,0,0,0.7);
+        background: rgba(0, 0, 0, 0.7);
         color: white;
         padding: 12px;
         border-radius: 8px;
         z-index: 1;
         max-width: 90%;
       }
-      #error {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #ffdddd;
-        color: #a33;
-        padding: 20px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: bold;
-        display: none;
-      }
     </style>
   </head>
   <body>
     <div id="info">Toca una superficie para colocar el modelo</div>
-    <div id="error">
-      Este dispositivo o navegador no es compatible con AR sin marcador.<br>
-      Prueba con <strong>Chrome en Android</strong> o un móvil con soporte WebXR.
-    </div>
 
     <script>
-      if (navigator.xr && navigator.xr.isSessionSupported) {
-        navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-          if (!supported) {
-            document.getElementById('error').style.display = 'block';
-          } else {
-            lanzarEscena();
-          }
-        }).catch(() => {
-          document.getElementById('error').style.display = 'block';
-        });
-      } else {
-        document.getElementById('error').style.display = 'block';
-      }
+      let camera, scene, renderer;
+      let controller, reticle;
+      let model = null;
 
-      function lanzarEscena() {
-        let camera, scene, renderer;
-        let controller, reticle, model;
+      init();
 
+      function init() {
+        // Escena
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
+        // Cámara
+        camera = new THREE.PerspectiveCamera(
+          70,
+          window.innerWidth / window.innerHeight,
+          0.01,
+          20
+        );
+
+        // Luz ambiental
         const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
         scene.add(light);
 
+        // Renderizador
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.xr.enabled = true;
         document.body.appendChild(renderer.domElement);
 
-        document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
-
-        const loader = new THREE.GLTFLoader();
-        loader.load('https://mel142.github.io/inercia.glb', function (gltf) {
-          model = gltf.scene;
-          model.scale.set(0.5, 0.5, 0.5);
+        // Botón de AR
+        const button = ARButton.createButton(renderer, {
+          requiredFeatures: ["hit-test"],
         });
+        document.body.appendChild(button);
 
+        // Carga del modelo .glb
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+          "https://mel142.github.io/inercia.glb",
+          function (gltf) {
+            model = gltf.scene;
+            model.scale.set(0.5, 0.5, 0.5);
+          },
+          undefined,
+          function (error) {
+            console.error("Error cargando modelo:", error);
+          }
+        );
+
+        // Retícula
         reticle = new THREE.Mesh(
           new THREE.RingGeometry(0.1, 0.11, 32).rotateX(-Math.PI / 2),
           new THREE.MeshBasicMaterial({ color: 0x00ff00 })
@@ -89,8 +88,9 @@
         reticle.visible = false;
         scene.add(reticle);
 
+        // Controlador (tocar para colocar modelo)
         controller = renderer.xr.getController(0);
-        controller.addEventListener('select', () => {
+        controller.addEventListener("select", () => {
           if (reticle.visible && model) {
             const clone = model.clone();
             clone.position.setFromMatrixPosition(reticle.matrix);
@@ -99,10 +99,13 @@
         });
         scene.add(controller);
 
-        renderer.xr.addEventListener('sessionstart', async () => {
+        // Detección de superficies (hit test)
+        renderer.xr.addEventListener("sessionstart", async () => {
           const session = renderer.xr.getSession();
-          const viewerRefSpace = await session.requestReferenceSpace('viewer');
-          const hitTestSource = await session.requestHitTestSource({ space: viewerRefSpace });
+          const viewerSpace = await session.requestReferenceSpace("viewer");
+          const hitTestSource = await session.requestHitTestSource({
+            space: viewerSpace,
+          });
 
           renderer.setAnimationLoop((timestamp, frame) => {
             if (frame) {
