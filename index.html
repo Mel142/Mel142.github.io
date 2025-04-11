@@ -45,11 +45,29 @@
       ar-modes="scene-viewer webxr quick-look"
     ></model-viewer>
 
-    <a
-      class="boton"
-      href="intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/inercia.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io;end;"
-    >
+    <!-- Botón único para AR: se asignará el enlace según el SO -->
+    <a id="boton-ar" class="boton" href="#">
       Ver en realidad aumentada
     </a>
+
+    <script>
+      const botonAR = document.getElementById("boton-ar");
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isAndroid = /Android/i.test(userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+
+      if (isAndroid) {
+        // Enlace para Android: utiliza intent:// para Scene Viewer
+        botonAR.href =
+          "intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/inercia.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io;end;";
+      } else if (isIOS) {
+        // Enlace para iOS: utiliza AR Quick Look con el atributo rel="ar"
+        botonAR.href = "https://mel142.github.io/inercia.usdz";
+        botonAR.setAttribute("rel", "ar");
+      } else {
+        // Si no es Android ni iOS, se asigna un enlace de fallback (por ejemplo, muestra la versión 3D en el navegador)
+        botonAR.href = "https://mel142.github.io/inercia.glb";
+      }
+    </script>
   </body>
 </html>
