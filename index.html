@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Modelo 3D: Inercia</title>
+    <title>Modelos 3D con AR</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
       body {
@@ -20,6 +20,13 @@
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       }
+      select {
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
       a.boton {
         display: inline-block;
         margin-top: 20px;
@@ -30,44 +37,79 @@
         font-weight: bold;
         border-radius: 8px;
       }
+      h2 {
+        margin-bottom: 10px;
+      }
     </style>
   </head>
   <body>
-    <h1>Modelo 3D: Depósito de inercia</h1>
+    <h1>Visualizador de modelos 3D</h1>
+
+    <label for="modelo">Selecciona un modelo:</label><br />
+    <select id="modelo">
+      <option value="inercia">Depósito de inercia</option>
+      <option value="unidad_exterior" selected>Unidad exterior</option>
+      <option value="interacumulador">Interacumulador</option>
+    </select>
+
+    <h2 id="titulo-modelo">Unidad exterior</h2>
 
     <model-viewer
-      src="https://mel142.github.io/inercia.glb"
-      ios-src="https://mel142.github.io/inercia.usdz"
-      alt="Depósito de inercia"
+      id="visor"
+      src="https://mel142.github.io/unidad_exterior.glb"
+      ios-src="https://mel142.github.io/unidad_exterior.usdz"
+      alt="Modelo 3D"
       auto-rotate
       camera-controls
       ar
       ar-modes="scene-viewer webxr quick-look"
     ></model-viewer>
 
-    <!-- Botón único para AR: se asignará el enlace según el SO -->
-    <a id="boton-ar" class="boton" href="#">
-      Ver en realidad aumentada
-    </a>
+    <a id="boton-ar" class="boton" href="#">Ver en realidad aumentada</a>
 
     <script>
+      const visor = document.getElementById("visor");
+      const selector = document.getElementById("modelo");
       const botonAR = document.getElementById("boton-ar");
+      const titulo = document.getElementById("titulo-modelo");
+
+      const nombresBonitos = {
+        inercia: "Depósito de inercia",
+        unidad_exterior: "Unidad exterior",
+        interacumulador: "Interacumulador",
+      };
+
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isAndroid = /Android/i.test(userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
 
-      if (isAndroid) {
-        // Enlace para Android: utiliza intent:// para Scene Viewer
-        botonAR.href =
-          "intent://arvr.google.com/scene-viewer/1.0?file=https://mel142.github.io/inercia.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io;end;";
-      } else if (isIOS) {
-        // Enlace para iOS: utiliza AR Quick Look con el atributo rel="ar"
-        botonAR.href = "https://mel142.github.io/inercia.usdz";
-        botonAR.setAttribute("rel", "ar");
-      } else {
-        // Si no es Android ni iOS, se asigna un enlace de fallback (por ejemplo, muestra la versión 3D en el navegador)
-        botonAR.href = "https://mel142.github.io/inercia.glb";
+      function actualizarModelo(nombre) {
+        const glbURL = `https://mel142.github.io/${nombre}.glb`;
+        const usdzURL = `https://mel142.github.io/${nombre}.usdz`;
+
+        visor.setAttribute("src", glbURL);
+        visor.setAttribute("ios-src", usdzURL);
+        titulo.textContent = nombresBonitos[nombre];
+
+        if (isAndroid) {
+          botonAR.href = `intent://arvr.google.com/scene-viewer/1.0?file=${glbURL}&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://mel142.github.io;end;`;
+          botonAR.removeAttribute("rel");
+        } else if (isIOS) {
+          botonAR.href = usdzURL;
+          botonAR.setAttribute("rel", "ar");
+        } else {
+          botonAR.href = glbURL;
+          botonAR.removeAttribute("rel");
+        }
       }
+
+      // Inicializar con el modelo por defecto seleccionado en el <select>
+      actualizarModelo(selector.value);
+
+      // Cambiar modelo al seleccionar uno nuevo
+      selector.addEventListener("change", () => {
+        actualizarModelo(selector.value);
+      });
     </script>
   </body>
 </html>
