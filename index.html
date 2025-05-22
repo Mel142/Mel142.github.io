@@ -19,12 +19,27 @@
         flex-wrap: wrap;
       }
 
+      .modelo {
+        max-width: 300px;
+      }
+
       model-viewer {
-        width: 300px;
+        width: 100%;
         height: 400px;
         background: white;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      a.boton {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background: #4caf50;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 8px;
       }
 
       h2 {
@@ -34,13 +49,14 @@
     </style>
   </head>
   <body>
-    <h1>Visualización comparativa</h1>
+    <h1>Comparador de modelos 3D</h1>
 
     <div class="modelos">
       <!-- Unidad exterior -->
-      <div>
+      <div class="modelo">
         <h2>Unidad exterior</h2>
         <model-viewer
+          id="mv-ue"
           src="https://mel142.github.io/unidad_exterior.glb"
           ios-src="https://mel142.github.io/unidad_exterior.usdz"
           alt="Unidad exterior"
@@ -49,12 +65,14 @@
           ar
           ar-modes="scene-viewer webxr quick-look"
         ></model-viewer>
+        <a id="ar-ue" class="boton" href="#">Ver en realidad aumentada</a>
       </div>
 
       <!-- Interacumulador -->
-      <div>
+      <div class="modelo">
         <h2>Interacumulador</h2>
         <model-viewer
+          id="mv-int"
           src="https://mel142.github.io/interacumulador.glb"
           ios-src="https://mel142.github.io/interacumulador.usdz"
           alt="Interacumulador"
@@ -63,7 +81,39 @@
           ar
           ar-modes="scene-viewer webxr quick-look"
         ></model-viewer>
+        <a id="ar-int" class="boton" href="#">Ver en realidad aumentada</a>
       </div>
     </div>
+
+    <script>
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isAndroid = /Android/i.test(userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+
+      function setARButton(buttonId, glbURL, usdzURL) {
+        const button = document.getElementById(buttonId);
+        if (isAndroid) {
+          button.href = `intent://arvr.google.com/scene-viewer/1.0?file=${glbURL}&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${glbURL};end;`;
+          button.removeAttribute("rel");
+        } else if (isIOS) {
+          button.href = usdzURL;
+          button.setAttribute("rel", "ar");
+        } else {
+          button.href = glbURL;
+          button.removeAttribute("rel");
+        }
+      }
+
+      setARButton(
+        "ar-ue",
+        "https://mel142.github.io/unidad_exterior.glb",
+        "https://mel142.github.io/unidad_exterior.usdz"
+      );
+      setARButton(
+        "ar-int",
+        "https://mel142.github.io/interacumulador.glb",
+        "https://mel142.github.io/interacumulador.usdz"
+      );
+    </script>
   </body>
 </html>
