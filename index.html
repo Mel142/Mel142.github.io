@@ -2,25 +2,31 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Comparador de modelos 3D</title>
+    <title>Selector de Pack con Modelos 3D</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
       body {
         font-family: sans-serif;
-        padding: 20px;
+        padding: 10px;
         background: #f4f4f4;
-        text-align: center;
+        margin: 0;
       }
 
-      .modelos {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
+      select {
+        padding: 10px;
+        font-size: 16px;
+        margin: 20px auto;
+        display: block;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        width: 90%;
+        max-width: 500px;
       }
 
       .modelo {
-        max-width: 300px;
+        max-width: 100%;
+        margin: 20px auto;
+        text-align: center;
       }
 
       model-viewer {
@@ -43,55 +49,54 @@
       }
 
       h2 {
-        margin-top: 10px;
-        font-size: 18px;
+        margin: 10px 0 5px;
       }
     </style>
   </head>
   <body>
-    <h1>Comparador de modelos 3D</h1>
+    <h1 style="text-align:center">Selecciona tu pack</h1>
+    <select id="pack-selector">
+      <option value="0">DAIKIN ERGA 6 KW INTEGRADO 230 L</option>
+      <option value="1">DAIKIN ERGA 4 KW MURAL 200 L</option>
+      <option value="2">DAIKIN ERGA 6 KW MURAL 200 L</option>
+      <option value="3">DAIKIN ERGA 8 KW MURAL 200 L</option>
+      <option value="4">DAIKIN EBLA 4 KW MONOBLOCK 200 L</option>
+      <option value="5">DAIKIN EBLA 6 KW MONOBLOCK 200 L</option>
+    </select>
 
-    <div class="modelos">
-      <!-- Unidad exterior -->
-      <div class="modelo">
-        <h2>Unidad exterior</h2>
-        <model-viewer
-          id="mv-ue"
-          src="https://mel142.github.io/unidad_exterior.glb"
-          ios-src="https://mel142.github.io/unidad_exterior.usdz"
-          alt="Unidad exterior"
-          auto-rotate
-          camera-controls
-          ar
-          ar-modes="scene-viewer webxr quick-look"
-        ></model-viewer>
-        <a id="ar-ue" class="boton" href="#">Ver en realidad aumentada</a>
-      </div>
+    <div class="modelo">
+      <h2 id="titulo-ue">ERGA06EVH</h2>
+      <model-viewer id="mv-ue" src="https://mel142.github.io/unidad_exterior.glb" ios-src="https://mel142.github.io/unidad_exterior.usdz" alt="Unidad exterior" auto-rotate camera-controls ar ar-modes="scene-viewer webxr quick-look"></model-viewer>
+      <a id="ar-ue" class="boton" href="#">Ver en realidad aumentada</a>
+    </div>
 
-      <!-- Interacumulador -->
-      <div class="modelo">
-        <h2>Interacumulador</h2>
-        <model-viewer
-          id="mv-int"
-          src="https://mel142.github.io/interacumulador.glb"
-          ios-src="https://mel142.github.io/interacumulador.usdz"
-          alt="Interacumulador"
-          auto-rotate
-          camera-controls
-          ar
-          ar-modes="scene-viewer webxr quick-look"
-        ></model-viewer>
-        <a id="ar-int" class="boton" href="#">Ver en realidad aumentada</a>
-      </div>
+    <div class="modelo">
+      <h2 id="titulo-int">EHVX08S23E6V</h2>
+      <model-viewer id="mv-int" src="https://mel142.github.io/interacumulador.glb" ios-src="https://mel142.github.io/interacumulador.usdz" alt="Interacumulador" auto-rotate camera-controls ar ar-modes="scene-viewer webxr quick-look"></model-viewer>
+      <a id="ar-int" class="boton" href="#">Ver en realidad aumentada</a>
     </div>
 
     <script>
+      const packs = [
+        ["ERGA06EVH", "EHVX08S23E6V"],
+        ["ERGA04EV", "EHBX04E6V"],
+        ["ERGA06EVH", "EHBX08E6V"],
+        ["ERGA08EVH7", "EHBX08E6V"],
+        ["EBLA04E3V3", "EKHWS200D3V3"],
+        ["EBLA06E3V3", "EKHWS200D3V3"]
+      ];
+
+      const selector = document.getElementById("pack-selector");
+      const tituloUE = document.getElementById("titulo-ue");
+      const tituloINT = document.getElementById("titulo-int");
+      const botonARUE = document.getElementById("ar-ue");
+      const botonARINT = document.getElementById("ar-int");
+
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isAndroid = /Android/i.test(userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
 
-      function setARButton(buttonId, glbURL, usdzURL) {
-        const button = document.getElementById(buttonId);
+      function setARButton(button, glbURL, usdzURL) {
         if (isAndroid) {
           button.href = `intent://arvr.google.com/scene-viewer/1.0?file=${glbURL}&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${glbURL};end;`;
           button.removeAttribute("rel");
@@ -104,16 +109,30 @@
         }
       }
 
-      setARButton(
-        "ar-ue",
-        "https://mel142.github.io/unidad_exterior.glb",
-        "https://mel142.github.io/unidad_exterior.usdz"
-      );
-      setARButton(
-        "ar-int",
-        "https://mel142.github.io/interacumulador.glb",
-        "https://mel142.github.io/interacumulador.usdz"
-      );
+      selector.addEventListener("change", () => {
+        const index = parseInt(selector.value);
+        const [ue, interior] = packs[index];
+
+        tituloUE.textContent = ue;
+        tituloINT.textContent = interior;
+
+        // por ahora usamos los mismos modelos pero en el futuro se puede adaptar
+        const glbUE = "https://mel142.github.io/unidad_exterior.glb";
+        const usdzUE = "https://mel142.github.io/unidad_exterior.usdz";
+        const glbINT = "https://mel142.github.io/interacumulador.glb";
+        const usdzINT = "https://mel142.github.io/interacumulador.usdz";
+
+        document.getElementById("mv-ue").setAttribute("src", glbUE);
+        document.getElementById("mv-ue").setAttribute("ios-src", usdzUE);
+        document.getElementById("mv-int").setAttribute("src", glbINT);
+        document.getElementById("mv-int").setAttribute("ios-src", usdzINT);
+
+        setARButton(botonARUE, glbUE, usdzUE);
+        setARButton(botonARINT, glbINT, usdzINT);
+      });
+
+      // Inicializa con la primera opción
+      selector.dispatchEvent(new Event("change"));
     </script>
   </body>
 </html>
