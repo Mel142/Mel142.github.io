@@ -24,7 +24,7 @@
       }
 
       .modelo {
-        max-width: 100%;
+        max-width: 500px;
         margin: 20px auto;
         text-align: center;
       }
@@ -66,13 +66,13 @@
 
     <div class="modelo">
       <h2 id="titulo-ue">ERGA06EVH</h2>
-      <model-viewer id="mv-ue" src="https://mel142.github.io/unidad_exterior.glb" ios-src="https://mel142.github.io/unidad_exterior.usdz" alt="Unidad exterior" auto-rotate camera-controls ar ar-modes="scene-viewer webxr quick-look"></model-viewer>
+      <model-viewer id="mv-ue" src="" ios-src="" alt="Unidad exterior" auto-rotate camera-controls ar ar-modes="scene-viewer webxr quick-look"></model-viewer>
       <a id="ar-ue" class="boton" href="#">Ver en realidad aumentada</a>
     </div>
 
     <div class="modelo">
       <h2 id="titulo-int">EHVX08S23E6V</h2>
-      <model-viewer id="mv-int" src="https://mel142.github.io/interacumulador.glb" ios-src="https://mel142.github.io/interacumulador.usdz" alt="Interacumulador" auto-rotate camera-controls ar ar-modes="scene-viewer webxr quick-look"></model-viewer>
+      <model-viewer id="mv-int" src="" ios-src="" alt="Interacumulador" auto-rotate camera-controls ar ar-modes="scene-viewer webxr quick-look"></model-viewer>
       <a id="ar-int" class="boton" href="#">Ver en realidad aumentada</a>
     </div>
 
@@ -91,6 +91,9 @@
       const tituloINT = document.getElementById("titulo-int");
       const botonARUE = document.getElementById("ar-ue");
       const botonARINT = document.getElementById("ar-int");
+
+      const visorUE = document.getElementById("mv-ue");
+      const visorINT = document.getElementById("mv-int");
 
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isAndroid = /Android/i.test(userAgent);
@@ -116,16 +119,15 @@
         tituloUE.textContent = ue;
         tituloINT.textContent = interior;
 
-        // por ahora usamos los mismos modelos pero en el futuro se puede adaptar
-        const glbUE = "https://mel142.github.io/unidad_exterior.glb";
-        const usdzUE = "https://mel142.github.io/unidad_exterior.usdz";
-        const glbINT = "https://mel142.github.io/interacumulador.glb";
-        const usdzINT = "https://mel142.github.io/interacumulador.usdz";
+        const glbUE = `https://mel142.github.io/${ue}.glb`;
+        const usdzUE = `https://mel142.github.io/${ue}.usdz`;
+        const glbINT = `https://mel142.github.io/${interior}.glb`;
+        const usdzINT = `https://mel142.github.io/${interior}.usdz`;
 
-        document.getElementById("mv-ue").setAttribute("src", glbUE);
-        document.getElementById("mv-ue").setAttribute("ios-src", usdzUE);
-        document.getElementById("mv-int").setAttribute("src", glbINT);
-        document.getElementById("mv-int").setAttribute("ios-src", usdzINT);
+        visorUE.setAttribute("src", glbUE);
+        visorUE.setAttribute("ios-src", usdzUE);
+        visorINT.setAttribute("src", glbINT);
+        visorINT.setAttribute("ios-src", usdzINT);
 
         setARButton(botonARUE, glbUE, usdzUE);
         setARButton(botonARINT, glbINT, usdzINT);
